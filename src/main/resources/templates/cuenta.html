@@ -1,0 +1,18 @@
+<!-- src/main/resources/templates/cuenta.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head th:replace="fragments :: head (titulo='Mi Cuenta')"></head>
+  <body>
+    <!-- Incluimos el navbar -->
+    <div th:replace="fragments :: navbar"></div>
+
+    <div class="container mt-4">
+      <h2>Mi Cuenta</h2>
+      <p><strong>Nombre:</strong> <span th:text="${usuario.nombre}">Usuario</span></p>
+      <p><strong>Email:</strong> <span th:text="${usuario.email}">email@ejemplo.com</span></p>
+      <!-- Aquí puedes añadir más campos o un formulario para editar perfil -->
+    </div>
+
+    <div th:replace="fragments :: javascript"></div>
+  </body>
+</html>
