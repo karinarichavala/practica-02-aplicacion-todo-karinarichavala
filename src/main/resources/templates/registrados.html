@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Usuarios Registrados</title>
+    <!-- Si ya tienes Bootstrap en tu proyecto, asegura que esté referenciado -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+</head>
+<body>
+    <div class="container mt-4">
+        <h2>Usuarios Registrados</h2>
+
+        <!-- Si no hay usuarios, muestra el mensaje -->
+        <div th:if="${#lists.isEmpty(usuarios)}">
+            <p>No hay usuarios registrados</p>
+        </div>
+
+        <!-- Si sí hay usuarios, muestra la tabla -->
+        <table class="table table-striped" th:if="${!#lists.isEmpty(usuarios)}">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Correo electrónico</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="u : ${usuarios}">
+                    <td th:text="${u.id}">1</td>
+                    <td th:text="${u.email}">correo@ejemplo.com</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
