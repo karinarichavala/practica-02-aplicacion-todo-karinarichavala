@@ -52,10 +52,17 @@ public class UsuarioService {
             throw new UsuarioServiceException("El usuario no tiene password");
         else {
             Usuario usuarioNuevo = modelMapper.map(usuario, Usuario.class);
+
+            // Si pidió ser admin y no hay uno aún, lo asignamos
+            if (Boolean.TRUE.equals(usuario.getEsAdmin()) && !existeAdministrador()) {
+                usuarioNuevo.setEsAdmin(true);
+            }
+
             usuarioNuevo = usuarioRepository.save(usuarioNuevo);
             return modelMapper.map(usuarioNuevo, UsuarioData.class);
         }
     }
+
 
     @Transactional(readOnly = true)
     public UsuarioData findByEmail(String email) {
@@ -85,4 +92,10 @@ public class UsuarioService {
                         .map(u -> modelMapper.map(u, UsuarioData.class))
                         .collect(Collectors.toList());
     }
+    
+    @Transactional(readOnly = true)
+    public boolean existeAdministrador() {
+        return usuarioRepository.existsByEsAdminTrue();
+    }
+
 }

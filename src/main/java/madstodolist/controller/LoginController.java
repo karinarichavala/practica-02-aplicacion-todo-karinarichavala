@@ -44,28 +44,43 @@ public class LoginController {
 
         if (loginStatus == UsuarioService.LoginStatus.LOGIN_OK) {
             UsuarioData usuario = usuarioService.findByEmail(loginData.geteMail());
-
             managerUserSession.logearUsuario(usuario.getId());
 
+            // ✅ Redirigir al administrador a la lista de usuarios
+            if (Boolean.TRUE.equals(usuario.getEsAdmin())) {
+                return "redirect:/registrados";
+            }
+
+            // Redirigir a la vista de tareas si es usuario normal
             return "redirect:/usuarios/" + usuario.getId() + "/tareas";
+
         } else if (loginStatus == UsuarioService.LoginStatus.USER_NOT_FOUND) {
             model.addAttribute("error", "No existe usuario");
             return "formLogin";
+
         } else if (loginStatus == UsuarioService.LoginStatus.ERROR_PASSWORD) {
             model.addAttribute("error", "Contraseña incorrecta");
             return "formLogin";
         }
+
         return "formLogin";
     }
-
+    
     @GetMapping("/registro")
     public String registroForm(Model model) {
-        model.addAttribute("registroData", new RegistroData());
+        RegistroData registroData = new RegistroData();
+        model.addAttribute("registroData", registroData);
+
+        boolean adminExistente = usuarioService.existeAdministrador();
+        model.addAttribute("adminExistente", adminExistente);
+
         return "formRegistro";
     }
 
-   @PostMapping("/registro")
-   public String registroSubmit(@Valid RegistroData registroData, BindingResult result, Model model) {
+
+
+    @PostMapping("/registro")
+    public String registroSubmit(@Valid RegistroData registroData, BindingResult result, Model model) {
 
         if (result.hasErrors()) {
             return "formRegistro";
@@ -82,10 +97,12 @@ public class LoginController {
         usuario.setPassword(registroData.getPassword());
         usuario.setFechaNacimiento(registroData.getFechaNacimiento());
         usuario.setNombre(registroData.getNombre());
+        usuario.setEsAdmin(registroData.getEsAdmin()); // ✅ esta línea es clave
 
         usuarioService.registrar(usuario);
         return "redirect:/login";
-   }
+    }
+
 
    @GetMapping("/logout")
    public String logout(HttpSession session) {
