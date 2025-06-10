@@ -65,6 +65,18 @@ public class LoginController {
 
         return "formLogin";
     }
+    
+    @GetMapping("/registro")
+    public String registroForm(Model model) {
+        RegistroData registroData = new RegistroData();
+        model.addAttribute("registroData", registroData);
+
+        boolean adminExistente = usuarioService.existeAdministrador();
+        model.addAttribute("adminExistente", adminExistente);
+
+        return "formRegistro";
+    }
+
 
 
     @PostMapping("/registro")
