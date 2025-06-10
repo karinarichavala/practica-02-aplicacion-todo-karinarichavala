@@ -19,7 +19,7 @@ public class UsuarioService {
 
     Logger logger = LoggerFactory.getLogger(UsuarioService.class);
 
-    public enum LoginStatus {LOGIN_OK, USER_NOT_FOUND, ERROR_PASSWORD}
+    public enum LoginStatus {LOGIN_OK, USER_NOT_FOUND, ERROR_PASSWORD, USER_BLOCKED}
 
     @Autowired
     private UsuarioRepository usuarioRepository;
@@ -28,15 +28,24 @@ public class UsuarioService {
 
     @Transactional(readOnly = true)
     public LoginStatus login(String eMail, String password) {
-        Optional<Usuario> usuario = usuarioRepository.findByEmail(eMail);
-        if (!usuario.isPresent()) {
+        Optional<Usuario> usuarioOpt = usuarioRepository.findByEmail(eMail);
+        if (!usuarioOpt.isPresent()) {
             return LoginStatus.USER_NOT_FOUND;
-        } else if (!usuario.get().getPassword().equals(password)) {
-            return LoginStatus.ERROR_PASSWORD;
-        } else {
-            return LoginStatus.LOGIN_OK;
         }
+
+        Usuario usuario = usuarioOpt.get();
+
+        if (!usuario.getPassword().equals(password)) {
+            return LoginStatus.ERROR_PASSWORD;
+        }
+
+        if (Boolean.TRUE.equals(usuario.getBloqueado())) {
+            return LoginStatus.USER_BLOCKED;
+        }
+
+        return LoginStatus.LOGIN_OK;
     }
+
 
     // Se añade un usuario en la aplicación.
     // El email y password del usuario deben ser distinto de null
@@ -97,5 +106,17 @@ public class UsuarioService {
     public boolean existeAdministrador() {
         return usuarioRepository.existsByEsAdminTrue();
     }
+    
+    @Transactional
+    public void toggleBloqueoUsuario(Long idUsuario) {
+        Usuario usuario = usuarioRepository.findById(idUsuario)
+                .orElseThrow(() -> new UsuarioServiceException("Usuario no encontrado"));
+
+        boolean nuevoEstado = !Boolean.TRUE.equals(usuario.getBloqueado());
+        usuario.setBloqueado(nuevoEstado);
+
+        usuarioRepository.save(usuario);
+    }
+
 
 }

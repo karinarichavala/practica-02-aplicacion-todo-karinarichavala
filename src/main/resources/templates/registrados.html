@@ -21,22 +21,35 @@
 
         <!-- Si sí hay usuarios, muestra la tabla -->
         <table class="table table-striped" th:if="${!#lists.isEmpty(usuarios)}">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Correo electrónico</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
+			<thead>
+			    <tr>
+			        <th>ID</th>
+			        <th>Correo electrónico</th>
+			        <th>Estado</th>
+			        <th>Acciones</th>
+			    </tr>
+			</thead>
+
             <tbody>
                 <tr th:each="u : ${usuarios}">
                     <td th:text="${u.id}">1</td>
                     <td th:text="${u.email}">correo@ejemplo.com</td>
-                    <td>
-                        <a th:href="@{'/registrados/' + ${u.id}}" class="btn btn-sm btn-primary">
-                            Ver
-                        </a>
-                    </td>
+					<td th:text="${u.bloqueado} ? 'Bloqueado' : 'Activo'">Estado</td>
+
+					<td>
+					    <a th:href="@{'/registrados/' + ${u.id}}" class="btn btn-sm btn-primary">
+					        Ver
+					    </a>
+
+					    <!-- Solo mostrar el botón si NO es el admin actual -->
+					    <form th:action="@{'/registrados/' + ${u.id} + '/toggle-bloqueo'}" method="post" th:if="${u.id != #httpSession.getAttribute('idUsuario')}">
+					        <button type="submit" class="btn btn-sm"
+					                th:classappend="${u.bloqueado} ? 'btn-success' : 'btn-danger'"
+					                th:text="${u.bloqueado} ? 'Habilitar' : 'Bloquear'">
+					        </button>
+					    </form>
+					</td>
+
                 </tr>
             </tbody>
         </table>

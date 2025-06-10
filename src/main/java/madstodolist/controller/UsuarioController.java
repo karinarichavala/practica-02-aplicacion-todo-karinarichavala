@@ -11,6 +11,10 @@ import madstodolist.authentication.ManagerUserSession;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.HttpStatus;
 
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+
 
 import java.util.List;
 
@@ -63,5 +67,26 @@ public class UsuarioController {
         model.addAttribute("usuario", usuarioConsultado);
         return "descripcionUsuario";
     }
+    
+    @PostMapping("/registrados/{id}/toggle-bloqueo")
+    public String toggleBloqueoUsuario(@PathVariable Long id) {
+        Long idUsuarioLogeado = managerUserSession.usuarioLogeado();
+        if (idUsuarioLogeado == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "No estás logeado");
+        }
+
+        UsuarioData admin = usuarioService.findById(idUsuarioLogeado);
+        if (!Boolean.TRUE.equals(admin.getEsAdmin())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Solo el administrador puede realizar esta acción");
+        }
+
+        if (idUsuarioLogeado.equals(id)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No puedes bloquearte a ti mismo");
+        }
+
+        usuarioService.toggleBloqueoUsuario(id);
+        return "redirect:/registrados";
+    }
+
 
 }
