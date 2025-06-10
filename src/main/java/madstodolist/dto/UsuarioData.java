@@ -12,6 +12,8 @@ public class UsuarioData {
     private String password;
     private Date fechaNacimiento;
     private Boolean esAdmin;
+    private Boolean bloqueado = false;
+
 
 
     // Getters y setters
@@ -59,6 +61,15 @@ public class UsuarioData {
     public void setEsAdmin(Boolean esAdmin) {
         this.esAdmin = esAdmin;
     }
+    
+    public Boolean getBloqueado() {
+        return bloqueado;
+    }
+
+    public void setBloqueado(Boolean bloqueado) {
+        this.bloqueado = bloqueado;
+    }
+
 
     // Sobreescribimos equals y hashCode para que dos usuarios sean iguales
     // si tienen el mismo ID (ignoramos el resto de atributos)

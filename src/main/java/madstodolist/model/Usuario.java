@@ -31,6 +31,10 @@ public class Usuario implements Serializable {
 
     @Column(name = "es_admin")
     private Boolean esAdmin = false;
+    
+    @Column(name = "bloqueado")
+    private Boolean bloqueado = false;
+
 
     // La relación es lazy por defecto,
     // es necesario acceder a la lista de tareas para que se carguen
@@ -95,6 +99,15 @@ public class Usuario implements Serializable {
     public void setEsAdmin(Boolean esAdmin) {
         this.esAdmin = esAdmin;
     }
+    
+    public Boolean getBloqueado() {
+        return bloqueado;
+    }
+
+    public void setBloqueado(Boolean bloqueado) {
+        this.bloqueado = bloqueado;
+    }
+
 
     // Getters y setters de la relación
 
